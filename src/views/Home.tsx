@@ -18,12 +18,12 @@ function Home() {
   }, []);
 
   return (
-    <div className="flex flex-wrap bg-slate-900 justify-center align-center gap-5 p-5">
+    <>
       {projects &&
         projects.map((project, index) => {
           return <ProjectCard key={index} project={project} />;
         })}
-    </div>
+    </>
   );
 }
 

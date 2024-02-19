@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ProjectType } from "../types/ProjectType";
-import EditableProjectCard from "../components/EditableProjectCard";
+// import EditableProjectCard from "../components/EditableProjectCard";
+import HoverableProjectCard from "../components/HoverableProjectCard";
 
 const Dashboard = () => {
   const [projects, setProjects] = useState<ProjectType[]>();
@@ -18,12 +19,12 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="flex flex-wrap bg-slate-900 justify-center align-center gap-5 p-5">
+    <>
       {projects &&
         projects.map((project, index) => {
-          return <EditableProjectCard key={index} project={project} />;
+          return <HoverableProjectCard key={index} project={project} />;
         })}
-    </div>
+    </>
   );
 };
 export default Dashboard;

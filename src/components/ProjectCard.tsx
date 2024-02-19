@@ -1,6 +1,7 @@
 // import projectPlaceholder from "../assets/project-placeholder.svg";
 import placeholder from "../images/project-placeholder.svg";
 
+
 type tags = {
   color: string;
   title: string;

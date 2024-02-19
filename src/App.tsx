@@ -7,12 +7,14 @@ const App = () => {
   return (
     <>
       <Navbar />
-      <Route path="/">
-        <Home />
-      </Route>
-      <Route path="/dashboard">
-        <Dashboard />
-      </Route>
+      <div className="flex flex-wrap bg-slate-900 justify-center align-center gap-5 p-5">
+        <Route path="/">
+          <Home />
+        </Route>
+        <Route path="/dashboard">
+          <Dashboard />
+        </Route>
+      </div>
     </>
   );
 };
