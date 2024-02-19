@@ -1,11 +1,20 @@
 import "./App.css";
-
-function App() {
+import Home from "./views/Home";
+import Navbar from "./components/Navbar";
+import { Route } from "wouter";
+import Dashboard from "./views/Dashboard";
+const App = () => {
   return (
     <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      <Navbar />
+      <Route path="/">
+        <Home />
+      </Route>
+      <Route path="/dashboard">
+        <Dashboard />
+      </Route>
     </>
   );
-}
+};
 
 export default App;
