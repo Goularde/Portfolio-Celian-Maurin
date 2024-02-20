@@ -1,21 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import "../App.css";
 import ProjectCard from "../components/ProjectCard";
-import axios from "axios";
-import { ProjectType } from "../types/ProjectType";
+import { ProjectContext } from "../hook/useProject";
 
 function Home() {
-  const [projects, setProjects] = useState<ProjectType[]>();
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/projects")
-      .then(function (response) {
-        setProjects(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, []);
+  const { projects } = useContext(ProjectContext);
 
   return (
     <>

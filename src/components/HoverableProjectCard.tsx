@@ -1,11 +1,10 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
 import placeholder from "../images/project-placeholder.svg";
 type tags = {
   color: string;
   title: string;
 };
-type EditableProjectCardPropsType = {
+type HoverableProjectCardType = {
   project: {
     imagePath: string;
     title: string;
@@ -14,11 +13,7 @@ type EditableProjectCardPropsType = {
   };
 };
 
-const EditableProjectCard = ({ project }: EditableProjectCardPropsType) => {
-  const [imgSrc, setImgSrc] = useState(
-    project.imagePath ? project.imagePath : placeholder
-  );
-
+const HoverableProjectCard = ({ project }: HoverableProjectCardType) => {
   return (
     <div
       className={`
@@ -28,7 +23,7 @@ const EditableProjectCard = ({ project }: EditableProjectCardPropsType) => {
       <div className="group-hover:blur-sm flex justify-center duration-300">
         <img
           defaultValue="titre du projet"
-          src={imgSrc}
+          src={project.imagePath ? project.imagePath : placeholder}
           className="max-h-64 object-contain lg:max-h-24 "
         />
       </div>
@@ -71,4 +66,4 @@ const EditableProjectCard = ({ project }: EditableProjectCardPropsType) => {
     </div>
   );
 };
-export default EditableProjectCard;
+export default HoverableProjectCard;

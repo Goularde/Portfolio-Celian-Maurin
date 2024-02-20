@@ -16,7 +16,7 @@ type ProjectCardPropsype = {
 };
 
 const ProjectCard = ({ project }: ProjectCardPropsype) => {
-  console.log(project);
+
 
   return (
     <div className="flex flex-col gap-2 transition hover:shadow-neumorphic-in shadow-neumorphic-out text-slate-600 bg-slate-900 p-5 w-11/12 rounded-md md:w-1/3 lg:w-1/5">

@@ -1,22 +1,10 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { ProjectType } from "../types/ProjectType";
+import { useContext } from "react";
 // import EditableProjectCard from "../components/EditableProjectCard";
 import HoverableProjectCard from "../components/HoverableProjectCard";
+import { ProjectContext } from "../hook/useProject";
 
 const Dashboard = () => {
-  const [projects, setProjects] = useState<ProjectType[]>();
-  // const [selectedProject, setSelectedProject] = useState<ProjectType[]>();
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/projects")
-      .then(function (response) {
-        setProjects(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, []);
+  const { projects } = useContext(ProjectContext);
 
   return (
     <>
