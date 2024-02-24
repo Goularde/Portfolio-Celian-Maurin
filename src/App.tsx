@@ -5,11 +5,14 @@ import { Route } from "wouter";
 import Dashboard from "./views/Dashboard";
 import { ProjectContext } from "./hook/useProject";
 import { useContext, useEffect } from "react";
+import EditableProjectCard from "./components/EditableProjectCard";
 
 const App = () => {
   const { getProjects } = useContext(ProjectContext);
+
   useEffect(() => {
     getProjects();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -22,6 +25,9 @@ const App = () => {
         </Route>
         <Route path="/dashboard">
           <Dashboard />
+        </Route>
+        <Route path="/dashboard/edit/:projectId">
+          {(params) => <EditableProjectCard projectId={params.projectId} />}
         </Route>
       </div>
     </>

@@ -14,6 +14,8 @@ export const ProjectContextProvider = ({ children }: PropsWithChildren) => {
     axios
       .get(`http://localhost:5000/projects`)
       .then(function (response) {
+        console.log(response.data);
+
         setProjects(response.data);
       })
       .catch(function (error) {

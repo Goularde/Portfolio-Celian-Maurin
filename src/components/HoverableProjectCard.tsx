@@ -1,19 +1,9 @@
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import placeholder from "../images/project-placeholder.svg";
-type tags = {
-  color: string;
-  title: string;
-};
-type HoverableProjectCardType = {
-  project: {
-    imagePath: string;
-    title: string;
-    description: string;
-    tags: tags[];
-  };
-};
+import { ProjectCardType } from "../types/ProjectCardType";
+import { Link } from "wouter";
 
-const HoverableProjectCard = ({ project }: HoverableProjectCardType) => {
+const HoverableProjectCard = ({ project }: ProjectCardType) => {
   return (
     <div
       className={`
@@ -59,10 +49,12 @@ const HoverableProjectCard = ({ project }: HoverableProjectCardType) => {
         })}
       </div>
 
-      <div className="rounded-md opacity-0 hover:cursor-pointer hover:opacity-100 bg-slate-800/40 duration-300 absolute gap-4 inset-0 z-10 flex justify-center items-center text-4xl font-semibold">
-        Editer
-        <PencilSquareIcon className="w-10" />
-      </div>
+      <Link href={`/dashboard/edit/${project._id}`}>
+        <div className="rounded-md opacity-0 hover:cursor-pointer hover:opacity-100 bg-slate-800/40 duration-300 absolute gap-4 inset-0 z-10 flex justify-center items-center text-4xl font-semibold">
+          Editer
+          <PencilSquareIcon className="w-10" />
+        </div>
+      </Link>
     </div>
   );
 };

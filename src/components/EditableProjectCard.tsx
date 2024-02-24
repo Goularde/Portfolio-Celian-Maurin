@@ -1,29 +1,32 @@
 import { useForm, SubmitHandler } from "react-hook-form";
-import { CheckIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
+import { CheckIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import placeholder from "../images/project-placeholder.svg";
-type tags = {
-  color: string;
-  title: string;
-};
-type EditableProjectCardPropsType = {
-  project: {
-    imagePath: string;
-    title: string;
-    description: string;
-    tags: tags[];
-  };
-};
+import axios from "axios";
+import { ProjectType } from "../types/ProjectType";
 
 type ProjectInfosForm = {
   title: string;
   description: string;
 };
-const EditableProjectCard = ({ project }: EditableProjectCardPropsType) => {
-  const [isEditable, setIsEditable] = useState(false);
-  const [imgSrc, setImgSrc] = useState(
-    project.imagePath ? project.imagePath : placeholder
-  );
+type EditableProjectCardType = {
+  projectId: string;
+};
+const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
+  const [project, setProject] = useState<ProjectType>();
+  const [imgSrc, setImgSrc] = useState(placeholder);
+
+  const getProject = (projectId: string) => {
+    axios
+      .get(`http://localhost:5000/projects/${projectId}`)
+      .then(function (response) {
+        console.log(response.data);
+        setProject(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
   const {
     register,
     handleSubmit,
@@ -31,22 +34,29 @@ const EditableProjectCard = ({ project }: EditableProjectCardPropsType) => {
     // formState: { errors },
   } = useForm<ProjectInfosForm>();
 
-  useEffect(() => {
-    setValue("title", project.title);
-    setValue("description", project.description);
-  });
-
   const onSubmit: SubmitHandler<ProjectInfosForm> = (data) => {
     console.log(data);
-    setIsEditable(!isEditable);
   };
+
+  useEffect(() => {
+    getProject(projectId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (project) {
+      setValue("title", project.title);
+      setValue("description", project.description);
+      if (project.imagePath) {
+        setImgSrc(project.imagePath);
+      }
+    }
+  }, [project, setValue]);
+
   return (
     <div
       className={`
-      ${!isEditable ? "group" : ""}
-      ${isEditable ? "hover:shadow-neumorphic-in" : ""}
       relative flex flex-col gap-2 transition  shadow-neumorphic-out text-slate-600 bg-slate-900 p-5 rounded-md w-11/12 md:w-1/3 lg:w-1/5`}
-      id={project.title}
+      id={project?.title}
     >
       <form>
         <div className="group-hover:blur-sm flex justify-center">
@@ -83,7 +93,7 @@ const EditableProjectCard = ({ project }: EditableProjectCardPropsType) => {
         />
         {/* <p >{project.description}</p> */}
         <div className="flex gap-1.5 flex-wrap group-hover:blur-sm mt-0.5">
-          {project.tags.map((tag, index) => {
+          {project?.tags.map((tag, index) => {
             const color = `#${tag.color}`;
             return (
               <div
@@ -105,23 +115,12 @@ const EditableProjectCard = ({ project }: EditableProjectCardPropsType) => {
               </div>
             );
           })}
-          {isEditable && (
-            <CheckIcon
-              className="w-5 cursor-pointer"
-              onClick={handleSubmit(onSubmit)}
-            />
-          )}
+          <CheckIcon
+            className="w-5 cursor-pointer"
+            onClick={handleSubmit(onSubmit)}
+          />
         </div>
       </form>
-      {!isEditable && (
-        <div
-          onClick={() => setIsEditable(!isEditable)}
-          className="rounded-md opacity-0 hover:cursor-pointer hover:opacity-100 bg-slate-800/40 duration-300 absolute gap-4 inset-0 z-10 flex justify-center items-center text-4xl font-semibold"
-        >
-          Editer
-          <PencilSquareIcon className="w-10" />
-        </div>
-      )}
     </div>
   );
 };
