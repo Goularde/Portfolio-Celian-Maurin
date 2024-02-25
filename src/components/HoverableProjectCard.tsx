@@ -4,6 +4,7 @@ import { ProjectCardType } from "../types/ProjectCardType";
 import { Link } from "wouter";
 
 const HoverableProjectCard = ({ project }: ProjectCardType) => {
+  console.log(`/${project.imagePath}`);
   return (
     <div
       className={`
@@ -13,7 +14,7 @@ const HoverableProjectCard = ({ project }: ProjectCardType) => {
       <div className="group-hover:blur-sm flex justify-center duration-300">
         <img
           defaultValue="titre du projet"
-          src={project.imagePath ? project.imagePath : placeholder}
+          src={project.imagePath ? `/${project.imagePath}` : placeholder}
           className="max-h-64 object-contain lg:max-h-24 "
         />
       </div>

@@ -1,17 +1,19 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
-import placeholder from "../images/project-placeholder.svg";
+import placeholder from "/images/project-placeholder.svg?url";
 import axios from "axios";
 import { ProjectType } from "../types/ProjectType";
 
 type ProjectInfosForm = {
+  imagePath: FileList;
   title: string;
   description: string;
 };
 type EditableProjectCardType = {
   projectId: string;
 };
+
 const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
   const [project, setProject] = useState<ProjectType>();
   const [imgSrc, setImgSrc] = useState(placeholder);
@@ -20,13 +22,29 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
     axios
       .get(`http://localhost:5000/projects/${projectId}`)
       .then(function (response) {
-        console.log(response.data);
+        // console.log(response.data);
         setProject(response.data);
       })
       .catch(function (error) {
         console.log(error);
       });
   };
+
+  const updateProject = (projectId: string, data: ProjectInfosForm) => {
+    const reqConfig = {
+      method: "put",
+      url: `http://localhost:5000/projects/${projectId}`,
+      data: data,
+    };
+    axios(reqConfig)
+      .then(function (response) {
+        setProject(response.data);
+      })
+      .catch(function (error) {
+        alert(error);
+      });
+  };
+
   const {
     register,
     handleSubmit,
@@ -36,6 +54,7 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
 
   const onSubmit: SubmitHandler<ProjectInfosForm> = (data) => {
     console.log(data);
+    updateProject(projectId, data);
   };
 
   useEffect(() => {
@@ -47,7 +66,7 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
       setValue("title", project.title);
       setValue("description", project.description);
       if (project.imagePath) {
-        setImgSrc(project.imagePath);
+        setImgSrc(`/${project.imagePath}`);
       }
     }
   }, [project, setValue]);
@@ -60,7 +79,7 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
     >
       <form>
         <div className="group-hover:blur-sm flex justify-center">
-          <label htmlFor="imgInp" className="">
+          <label htmlFor="imgInp" className="hover:cursor-pointer">
             <input
               accept="image/*"
               type="file"
@@ -68,6 +87,7 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
               className="hidden"
               onChange={(e) => {
                 if (e.target.files) {
+                  // setValue("imagePath", e.target.files);
                   setImgSrc(URL.createObjectURL(e.target.files[0]));
                 }
               }}
