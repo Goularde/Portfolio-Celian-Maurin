@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import placeholder from "/images/project-placeholder.svg?url";
 import axios from "axios";
 import { ProjectType } from "../types/ProjectType";
+import FormData from "form-data"
 
 type ProjectInfosForm = {
   imagePath: FileList;
@@ -17,6 +18,9 @@ type EditableProjectCardType = {
 const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
   const [project, setProject] = useState<ProjectType>();
   const [imgSrc, setImgSrc] = useState(placeholder);
+  const [thumbnail, setThumbnail] = useState<File>();
+
+  const imgForm = new FormData();
 
   const getProject = (projectId: string) => {
     axios
@@ -30,6 +34,22 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
       });
   };
 
+  const uploadThumbnail = async () => {
+    imgForm.append("thumbnail", thumbnail);
+    try {
+      axios
+        .post("http://localhost:5000/upload", imgForm, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((res) => {
+          console.log(res.data);
+        });
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const updateProject = (projectId: string, data: ProjectInfosForm) => {
     const reqConfig = {
       method: "put",
@@ -54,7 +74,8 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
 
   const onSubmit: SubmitHandler<ProjectInfosForm> = (data) => {
     console.log(data);
-    updateProject(projectId, data);
+    // updateProject(projectId, data);
+    uploadThumbnail();
   };
 
   useEffect(() => {
@@ -85,10 +106,11 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
               type="file"
               id="imgInp"
               className="hidden"
+              name="thumbnail"
               onChange={(e) => {
                 if (e.target.files) {
-                  // setValue("imagePath", e.target.files);
                   setImgSrc(URL.createObjectURL(e.target.files[0]));
+                  setThumbnail(e.target.files[0]);
                 }
               }}
             />
