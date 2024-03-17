@@ -1,13 +1,15 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { CheckIcon } from "@heroicons/react/24/solid";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import placeholder from "/images/project-placeholder.svg?url";
 import axios from "axios";
 import { ProjectType } from "../types/ProjectType";
-import FormData from "form-data"
+import FormData from "form-data";
+import { useLocation } from "wouter";
+import { ProjectContext } from "../hook/useProject";
 
 type ProjectInfosForm = {
-  imagePath: FileList;
+  image: string;
   title: string;
   description: string;
 };
@@ -19,6 +21,8 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
   const [project, setProject] = useState<ProjectType>();
   const [imgSrc, setImgSrc] = useState(placeholder);
   const [thumbnail, setThumbnail] = useState<File>();
+  const [, navigate] = useLocation();
+  const { getProjects } = useContext(ProjectContext);
 
   const imgForm = new FormData();
 
@@ -34,22 +38,32 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
       });
   };
 
-  const uploadThumbnail = async () => {
-    imgForm.append("thumbnail", thumbnail);
-    try {
-      axios
-        .post("http://localhost:5000/upload", imgForm, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-        .then((res) => {
-          console.log(res.data);
-        });
-    } catch (error) {
-      alert(error);
-    }
-  };
+  // const uploadThumbnail = async (): Promise<ImageType | undefined> => {
+  //   imgForm.append("thumbnail", thumbnail);
+  //   try {
+  //     axios
+  //       .post("http://localhost:5000/upload", imgForm, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       })
+  //       .then((res) => {
+  //         return res.data;
+  //       });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   return;
+  // };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // const uploadThumbnailInfo = async (data: ImageType) => {
+  //   try {
+  //     axios.post("http://localhost:5000/images", data).then((res) => {
+  //       console.log(res.data);
+  //     });
+  //   } catch (error) {
+  //     alert(error);
+  //   }
+  // };
+
   const updateProject = (projectId: string, data: ProjectInfosForm) => {
     const reqConfig = {
       method: "put",
@@ -57,10 +71,11 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
       data: data,
     };
     axios(reqConfig)
-      .then(function (response) {
-        setProject(response.data);
+      .then(() => {
+        getProjects();
+        navigate("/dashboard");
       })
-      .catch(function (error) {
+      .catch((error) => {
         alert(error);
       });
   };
@@ -73,9 +88,33 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
   } = useForm<ProjectInfosForm>();
 
   const onSubmit: SubmitHandler<ProjectInfosForm> = (data) => {
-    console.log(data);
-    // updateProject(projectId, data);
-    uploadThumbnail();
+    if (thumbnail) {
+      try {
+        imgForm.append("thumbnail", thumbnail);
+        // Upload Image to server
+        axios
+          .post("http://localhost:5000/upload", imgForm, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+          .then(
+            // Upload Image Data to db
+            (res) => {
+              res.data.projects = [projectId];
+              axios.post("http://localhost:5000/images", res.data).then(
+                // Update project
+                (res) => {
+                  data.image = res.data._id;
+                  updateProject(projectId, data);
+                }
+              );
+            }
+          );
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      updateProject(projectId, data);
+    }
   };
 
   useEffect(() => {
@@ -86,8 +125,8 @@ const EditableProjectCard = ({ projectId }: EditableProjectCardType) => {
     if (project) {
       setValue("title", project.title);
       setValue("description", project.description);
-      if (project.imagePath) {
-        setImgSrc(`/${project.imagePath}`);
+      if (project.image[0]) {
+        setImgSrc(`http://localhost:5000/${project.image[0].path}`);
       }
     }
   }, [project, setValue]);

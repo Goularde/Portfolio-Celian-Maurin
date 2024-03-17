@@ -1,5 +1,7 @@
+import { ImageType } from "./ThumbnailInfoType";
+
 export type ProjectType = {
-  imagePath: string;
+  image: ImageType[];
   title: string;
   description: string;
   tags: { color: string; title: string }[];
